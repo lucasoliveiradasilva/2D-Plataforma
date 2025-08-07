@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool canTakeDamage = true;
     private bool isGrounded;
-    
+
     public void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -29,7 +29,7 @@ public class PlayerMovement : MonoBehaviour
             lastHorizontal = move;
 
         rb.linearVelocity = new Vector2(move * speed, rb.linearVelocity.y);
-        if (Input.GetButtonDown("Jump") && isGrounded) //Input.GetKeyDown(Keycode(Space))
+        if (Input.GetButtonDown("Jump") && isGrounded)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
         }
@@ -59,7 +59,7 @@ public class PlayerMovement : MonoBehaviour
 
         CameraShake.Instance.Shake(0.2f, 0.3f); // Shake levinho
 
-        
+
         rb.simulated = false; // Desliga a física pra não bugar colisão
 
         float knockDuration = 0.2f;
