@@ -3,8 +3,8 @@ using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public float speed;
-    public float jumpForce;
+    public float speed = 5f;
+    public float jumpForce = 8f;
     private float knockbackForce = 10f;
     private float invincibleTime = 0.5f;
     private float lastHorizontal = 1f;
@@ -15,73 +15,67 @@ public class PlayerMovement : MonoBehaviour
 
     private bool canTakeDamage = true;
     private bool isGrounded;
+    private bool isKnockback;
 
-    public void Start()
+    void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         originalColor = spriteRenderer.color;
     }
-    public void Update()
-    {
-        float move = Input.GetAxisRaw("Horizontal");
-        if (move != 0)
-            lastHorizontal = move;
 
-        rb.linearVelocity = new Vector2(move * speed, rb.linearVelocity.y);
-        if (Input.GetButtonDown("Jump") && isGrounded)
+    void Update()
+    {
+        if (!isKnockback)
         {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            float move = Input.GetAxisRaw("Horizontal");
+            if (move != 0)
+                lastHorizontal = move;
+
+            rb.linearVelocity = new Vector2(move * speed, rb.linearVelocity.y);
+
+            if (Input.GetButtonDown("Jump") && isGrounded)
+            {
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+                isGrounded = false;
+            }
         }
     }
-    public void OnCollisionEnter2D(Collision2D collision)
+
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.contacts[0].normal.y > 0.5f)
-        {
+        if (collision.collider.CompareTag("Ground"))
             isGrounded = true;
-        }
+
         if (collision.collider.CompareTag("Spike") && canTakeDamage)
         {
-            // Direção contrária à última movimentação
-            Vector2 knockDir = new Vector2(-Mathf.Sign(lastHorizontal), 0);
-
+            Vector2 knockDir = new Vector2(-Mathf.Sign(lastHorizontal), 0.5f);
+            StartCoroutine(ReactToSpike(knockDir));
+        }
+        if (collision.collider.CompareTag("Enemy") && canTakeDamage)
+        {
+            Vector2 knockDir = new Vector2(-Mathf.Sign(lastHorizontal), 0.5f);
             StartCoroutine(ReactToSpike(knockDir));
         }
     }
-    public void OnCollisionExit2D(Collision2D collision)
-    {
-        isGrounded = false;
-    }
+
     private IEnumerator ReactToSpike(Vector2 knockDir)
     {
         canTakeDamage = false;
+        isKnockback = true;
+
         spriteRenderer.color = Color.white;
+        CameraShake.Instance.Shake(0.2f, 0.3f);
 
-        CameraShake.Instance.Shake(0.2f, 0.3f); // Shake levinho
+        rb.linearVelocity = Vector2.zero;
+        rb.AddForce(knockDir * knockbackForce, ForceMode2D.Impulse);
 
+        yield return new WaitForSeconds(0.2f);
 
-        rb.simulated = false; // Desliga a física pra não bugar colisão
-
-        float knockDuration = 0.2f;
-        float timer = 0f;
-        float knockSpeed = knockbackForce;
-
-        while (timer < knockDuration)
-        {
-            transform.position += (Vector3)(knockDir * knockSpeed * Time.deltaTime);
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        // Reativa física
-        rb.simulated = true;
-
+        isKnockback = false;
         spriteRenderer.color = originalColor;
 
         yield return new WaitForSeconds(invincibleTime);
-
         canTakeDamage = true;
     }
-
-    //CTRL+S = Salvar!
 }
