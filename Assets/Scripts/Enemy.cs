@@ -9,13 +9,13 @@ public class Enemy : MonoBehaviour
     private int direcao = 1; // 1 = direita, -1 = esquerda
     private Rigidbody2D rb;
 
-    void Start()
+    public void Start()
     {
         pontoInicialX = transform.position.x;
         rb = GetComponent<Rigidbody2D>();
     }
 
-    void Update()
+    public void Update()
     {
         rb.linearVelocity = new Vector2(velocidade * direcao, rb.linearVelocity.y);
 
