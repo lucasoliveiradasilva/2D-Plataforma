@@ -24,7 +24,7 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         originalColor = spriteRenderer.color;
-        health = FindAnyObjectByType<PlayerHealth>();
+        health = FindAnyObjectByType<PlayerHealth>(); // !
     }
 
     public void Update()
