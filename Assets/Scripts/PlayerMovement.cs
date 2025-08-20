@@ -47,26 +47,25 @@ public class PlayerMovement : MonoBehaviour
 
     public void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.collider.CompareTag("Ground")) // !
+        if (collision.collider.CompareTag("Ground"))
         {
             isGrounded = true;
         }
         if (collision.collider.CompareTag("Spike") && canTakeDamage)
         {
-            particleHit.Play(); 
+            particleHit.Play(); //!
+            health.TakeDamage(15); //!
             Vector2 knockDir = new Vector2(-Mathf.Sign(lastHorizontal), 0.5f);
-            health.TakeDamage(5);
             StartCoroutine(ReactToSpike(knockDir));
         }
-        if (collision.collider.CompareTag("Enemy") && canTakeDamage) // !
+        if (collision.collider.CompareTag("Enemy") && canTakeDamage)
         {
-            particleHit.Play(); 
+            particleHit.Play();
             Vector2 knockDir = new Vector2(-Mathf.Sign(lastHorizontal), 0.5f);
-            health.TakeDamage(5);
+            health.TakeDamage(10);
             StartCoroutine(ReactToSpike(knockDir));
         }
     }
-
     private IEnumerator ReactToSpike(Vector2 knockDir)
     {
         canTakeDamage = false;
@@ -87,3 +86,5 @@ public class PlayerMovement : MonoBehaviour
         canTakeDamage = true;
     }
 }
+
+

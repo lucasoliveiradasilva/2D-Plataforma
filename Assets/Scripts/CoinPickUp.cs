@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CoinPickUp : MonoBehaviour
 {
-    public GameManager gm;
+    private GameManager gm;
 
     public void Start()
     {
@@ -10,7 +10,7 @@ public class CoinPickUp : MonoBehaviour
     }
     public void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Player"))
+        if(collision.gameObject.CompareTag("Player"))
         {
             gm.AddCoin(1);
             Destroy(gameObject);
